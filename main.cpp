@@ -21,7 +21,7 @@ struct walllist
 };
 
 static float angleX = 0.0, angleY = 0.0, rati;//angle绕y轴的旋转角，ratio窗口高宽比
-static float mx = 50.0f, my = 1.8f, mz = 50.0f;//相机位置
+static float mx = 50.0f, my = 2.6f, mz = 50.0f;//相机位置
 static float lx = 0.0f, ly = 0.0f, lz = -1.0f,px=mx,pz=mz;//视线方向，初始设为沿着Z轴负方向
 static GLint wall_display_list;
 static POINT mousePos;
@@ -247,7 +247,7 @@ void initScenne()
 	glEnable(GL_DEPTH_TEST);
 	wall_display_list = createDL();
 	glEnable(GL_LIGHTING);
-	GLfloat ambientLight[] = {0.9f, 0.9f, 0.9f, 1.0f};
+	GLfloat ambientLight[] = {10.9f, 10.9f, 10.9f, 1.0f};
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT,ambientLight);
 	recordWall();
 }
