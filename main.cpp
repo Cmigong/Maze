@@ -12,16 +12,39 @@
 
 using namespace std;
 
+struct walllist
+{
+    float point1x;
+    float point1z;
+    float point2x;
+    float point2z;
+};
+
 static float angleX = 0.0, angleY = 0.0, rati;//angle绕y轴的旋转角，ratio窗口高宽比
-static float mx = 0.0f, my = 1.8f, mz = 0.0f;//相机位置
-static float lx = 0.0f, ly = 0.0f, lz = -1.0f;//视线方向，初始设为沿着Z轴负方向
+static float mx = 50.0f, my = 1.8f, mz = 50.0f;//相机位置
+static float lx = 0.0f, ly = 0.0f, lz = -1.0f,px=mx,pz=mz;//视线方向，初始设为沿着Z轴负方向
 static GLint wall_display_list;
 static POINT mousePos;
 static int middleX = GetSystemMetrics(SM_CXSCREEN)/2;
 static int middleY = GetSystemMetrics(SM_CYSCREEN)/2;
 static float lastmx=middleX,lastmy=middleY;
 static UINT g_cactus[16];
+static int wallnum=0;
+static walllist wall[1500];
 
+void light0()
+{
+    GLfloat spot[] = {mx, my, mz,1};
+    GLfloat ambientLight[] = {0.5f, 0.5f, 0.5f, 1.0f};
+    GLfloat specular[] = {1.0f, 1.0f, 1.0f, 1.0f};
+    GLfloat spot_position[] = {mx+lx, my+ly, mz+lz};
+    glLightfv(GL_LIGHT0,GL_DIFFUSE,ambientLight);
+    glLightfv(GL_LIGHT0,GL_SPECULAR,specular);
+    glLightfv(GL_LIGHT0,GL_POSITION,spot);
+    glLightfv(GL_LIGHT0,GL_SPOT_DIRECTION,spot_position);
+    glLightf(GL_LIGHT0,GL_SPOT_CUTOFF,10.0f);
+    glEnable(GL_LIGHT0);
+}
 //定义观察方式
 void changeSize(int w, int h)
 {
@@ -30,10 +53,8 @@ void changeSize(int w, int h)
 	rati= 1.0f*w / h;
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-
 	//设置视口为整个窗口大小
 	glViewport(0, 0, w, h);
-
 	//设置可视空间
 	gluPerspective(45, rati, 1, 3500);
 	glMatrixMode(GL_MODELVIEW);
@@ -113,36 +134,9 @@ bool LoadT81(char *filename, GLuint &texture)
 	if(pImage == NULL)		return false;
 	glGenTextures(1, &texture);
 	glBindTexture    (GL_TEXTURE_2D,texture);
-	gluBuild2DMipmaps(GL_TEXTURE_2D,4, pImage->sizeX,
-					  pImage->sizeY,GL_RGB, GL_UNSIGNED_BYTE,pImage->data);
-	//free(pImage->data);
-	//free(pImage);
+	gluBuild2DMipmaps(GL_TEXTURE_2D,4, pImage->sizeX,pImage->sizeY,GL_RGB, GL_UNSIGNED_BYTE,pImage->data);
 	return true;
 }
-
-void initScenne()
-{
-    char str[]="data/images/sand0.bmp";
-    LoadT81(str,	 g_cactus[0]);
-    char str1[]="data/images/0RBack.bmp";
-    LoadT81(str1, g_cactus[2]);
-    char str2[]="data/images/0Front.bmp";
-	LoadT81(str2, g_cactus[3]);
-	char str3[]="data/images/0Top.bmp";
-	LoadT81(str3,	 g_cactus[4]);
-	char str4[]="data/images/0Left.bmp";
-	LoadT81(str4,  g_cactus[5]);
-	char str5[]="data/images/0Right.bmp";
-	LoadT81(str5, g_cactus[6]);
-	char str6[]="data/images/sand2.bmp";
-	LoadT81(str6, g_cactus[1]);
-    glEnable(GL_TEXTURE_2D);
-    SetCursorPos(middleX, middleY);
-    ShowCursor(false);
-	glEnable(GL_DEPTH_TEST);
-	wall_display_list = createDL();
-}
-
 
 void texture(UINT textur)
 {
@@ -201,11 +195,69 @@ void CreateSkyBox()
 	glEnd();
 }
 
+void setWall()
+{
+    texture(g_cactus[1]);
+	for (int i= -3; i< 3; i++)
+    {
+        for (int j = -3; j< 3; j++)
+        {
+			glPushMatrix();
+			glTranslatef(i*11, 0, j*11);
+			glCallList(wall_display_list);
+			glPopMatrix();
+		}
+    }
+}
+
+void recordWall()
+{
+    for(int i=-3;i<3;i++)
+    {
+        for(int j=-3;j<3;j++)
+        {
+            wall[wallnum].point1x=(i*11-5);
+			wall[wallnum].point1z=(i*11-5);
+			wall[wallnum].point2x=(i*11+5);
+			wall[wallnum].point2z=(i*11+5);
+			wallnum++;
+        }
+    }
+}
+
+void initScenne()
+{
+    char str[]="data/images/sand0.bmp";
+    LoadT81(str,	 g_cactus[0]);
+    char str1[]="data/images/0RBack.bmp";
+    LoadT81(str1, g_cactus[2]);
+    char str2[]="data/images/0Front.bmp";
+	LoadT81(str2, g_cactus[3]);
+	char str3[]="data/images/0Top.bmp";
+	LoadT81(str3,	 g_cactus[4]);
+	char str4[]="data/images/0Left.bmp";
+	LoadT81(str4,  g_cactus[5]);
+	char str5[]="data/images/0Right.bmp";
+	LoadT81(str5, g_cactus[6]);
+	char str6[]="data/images/sand2.bmp";
+	LoadT81(str6, g_cactus[1]);
+    glEnable(GL_TEXTURE_2D);
+    SetCursorPos(middleX, middleY);
+    ShowCursor(false);
+	glEnable(GL_DEPTH_TEST);
+	wall_display_list = createDL();
+	glEnable(GL_LIGHTING);
+	GLfloat ambientLight[] = {0.9f, 0.9f, 0.9f, 1.0f};
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT,ambientLight);
+	recordWall();
+}
+
 void renderScene(void)
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	CreateSkyBox();
-	//画地面
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	light0();
+    CreateSkyBox();
+    //画地面
 	texture(g_cactus[0]);
 	glBegin(GL_QUADS);
 	glTexCoord2f(0.0f,0.0f);glVertex3f(-100.0f, 0.0f, -100.0f);
@@ -213,27 +265,46 @@ void renderScene(void)
 	glTexCoord2f(1.0f,1.0f);glVertex3f(100.0f, 0.0f, 100.0f);
 	glTexCoord2f(0.0f,1.0f);glVertex3f(100.0f, 0.0f, -100.0f);
 	glEnd();
-	texture(g_cactus[1]);
-	//画36个雪人
-	for (int i= -3; i< 3; i++)
-		for (int j = -3; j< 3; j++)
-        {
-			glPushMatrix();
-			glTranslatef(i*13.0, 0, j*13.0);
-			glCallList(wall_display_list);
-			glPopMatrix();
-		}
-	glutSwapBuffers();
+	setWall();
+    glutSwapBuffers();
+}
+
+bool isWall(float x,float z)
+{
+    for(int i=0;i<wallnum;i++)
+    {
+        if(wall[i].point1x-x<1.3&&wall[i].point2x-x>-1.3&&z-wall[i].point1z>-1.3&&wall[i].point2z-z>-1.3) return false;
+    }
+    return true;
+}
+
+void kickWall(float x,float z)
+{
+    int t;
+    if(!isWall(mx,mz))
+    {
+        t=mx;
+        mx=x;
+        if(isWall(mx,mz)) return;
+        else mx=t;
+        t=mz;
+        mz=z;
+        if(isWall(mx,mz)) return;
+        else mz=t;
+    }
 }
 
 //移动相机
 void moveMeFlat(int direction)
 {
+    px=mx;
+    pz=mz;
     if(direction==1||direction==-1)
     {
         mx+=(float)direction*cos(3.14*angleX/180.0f)*0.2;
         mz+=(float)direction*sin(3.14*angleX/180.0f)*0.2;
         glLoadIdentity();
+        kickWall(px,pz);
         gluLookAt(mx, my, mz, mx + lx, my + ly, mz + lz, 0.0f, 1.0f, 0.0f);
     }
     else if(direction==2||direction==-2)
@@ -241,6 +312,7 @@ void moveMeFlat(int direction)
         mx+=(float)direction/2*cos(3.14*(angleX-90)/180.0f)*0.2;
         mz+=(float)direction/2*sin(3.14*(angleX-90)/180.0f)*0.2;
         glLoadIdentity();
+        kickWall(px,pz);
         gluLookAt(mx, my, mz, mx + lx, my + ly, mz + lz, 0.0f, 1.0f, 0.0f);
     }
 }
@@ -295,7 +367,7 @@ int main(int argc,char **argv)
 	glutInitWindowPosition(50, 50);
 	glutInitWindowSize(GetSystemMetrics(SM_CXSCREEN)-100, GetSystemMetrics(SM_CYSCREEN)-100);
 	glutCreateWindow("");
-	glutFullScreen();
+	//glutFullScreen();
 
 	initScenne();
 	glutKeyboardFunc(keyboredmove);
