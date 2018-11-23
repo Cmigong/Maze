@@ -217,9 +217,9 @@ void recordWall()
         for(int j=-3;j<3;j++)
         {
             wall[wallnum].point1x=(i*11-5);
-			wall[wallnum].point1z=(i*11-5);
+			wall[wallnum].point1z=(j*11-5);
 			wall[wallnum].point2x=(i*11+5);
-			wall[wallnum].point2z=(i*11+5);
+			wall[wallnum].point2z=(j*11+5);
 			wallnum++;
         }
     }
