@@ -21,7 +21,7 @@ struct walllist
 };
 
 static float angleX = 0.0, angleY = 0.0, rati;//angle绕y轴的旋转角，ratio窗口高宽比
-static float mx = 50.0f, my = 2.6f, mz = 50.0f;//相机位置
+static float mx = 50.0f, my = 2.5f, mz = 50.0f;//相机位置
 static float lx = 0.0f, ly = 0.0f, lz = -1.0f,px=mx,pz=mz;//视线方向，初始设为沿着Z轴负方向
 static GLint wall_display_list;
 static POINT mousePos;
@@ -324,10 +324,15 @@ void mousemove(int x,int y)
     angleY+=(float)(lastmy - mousePos.y)*0.17f;
     lastmx=mousePos.x;
     lastmy=mousePos.y;
-    if(mousePos.x==0||mousePos.x>800)
+    if(mousePos.x<200||mousePos.x>800)
     {
         lastmx=middleX;
         SetCursorPos(middleX, lastmy);
+    }
+    if(mousePos.y<200||mousePos.y>400)
+    {
+        lastmy=middleY;
+        SetCursorPos(lastmx, middleY);
     }
     if(angleY<-360) angleY=-360;
     if(angleY> 360) angleY= 360;
@@ -341,19 +346,19 @@ void mousemove(int x,int y)
 
 void keyboredmove(unsigned char key,int x,int y)
 {
-    if(key=='w')
+    if(key=='w'||key=='W')
     {
         moveMeFlat(1);
     }
-    else if(key=='d')
+    else if(key=='d'||key=='D')
     {
         moveMeFlat(-2);
     }
-    else if(key=='a')
+    else if(key=='a'||key=='A')
     {
         moveMeFlat(2);
     }
-    else if(key=='s')
+    else if(key=='s'||key=='S')
     {
         moveMeFlat(-1);
     }
