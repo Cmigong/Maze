@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <ctime>
 #include <cstdlib>
+#include <mmsystem.h>
 
 using namespace std;
 
@@ -34,9 +35,7 @@ static walllist wall[1500];
 
 void light0()
 {
-    GLfloat lightx=mx-25*cos(3.14*angleX/180.0f);
-    GLfloat lightz=mz-25*sin(3.14*angleX/180.0f);
-    GLfloat spot[] = {lightx, my, lightz,1};
+    GLfloat spot[] = {mx, my,mz,1};
     GLfloat ambientLight[] = {0.5f, 0.5f, 0.5f, 1.0f};
     GLfloat specular[] = {1.0f, 1.0f, 1.0f, 1.0f};
     GLfloat spot_position[] = {mx+lx, my+ly, mz+lz};
@@ -206,7 +205,7 @@ void setWall()
         for (int j = -3; j< 3; j++)
         {
 			glPushMatrix();
-			glTranslatef(i*11, 0, j*11);
+			glTranslatef(i*14, 0, j*14);
 			glCallList(wall_display_list);
 			glPopMatrix();
 		}
@@ -219,10 +218,10 @@ void recordWall()
     {
         for(int j=-3;j<3;j++)
         {
-            wall[wallnum].point1x=(i*11-5);
-			wall[wallnum].point1z=(j*11-5);
-			wall[wallnum].point2x=(i*11+5);
-			wall[wallnum].point2z=(j*11+5);
+            wall[wallnum].point1x=(i*14-5);
+			wall[wallnum].point1z=(j*14-5);
+			wall[wallnum].point2x=(i*14+5);
+			wall[wallnum].point2z=(j*14+5);
 			wallnum++;
         }
     }
@@ -282,23 +281,23 @@ bool isWall(float x,float z)
 {
     for(int i=0;i<wallnum;i++)
     {
-        if(wall[i].point1x-x<1.3&&wall[i].point2x-x>-1.3&&z-wall[i].point1z>-1.3&&wall[i].point2z-z>-1.3) return false;
+        if(wall[i].point1x-x<1.3&&wall[i].point2x-x>-1.3&&z-wall[i].point1z>-1.3&&wall[i].point2z-z>-1.3) return true;
     }
-    return true;
+    return false;
 }
 
 void kickWall(float x,float z)
 {
-    int t;
-    if(!isWall(mx,mz))
+    float t;
+    if(isWall(mx,mz))
     {
         t=mx;
         mx=x;
-        if(isWall(mx,mz)) return;
+        if(!isWall(mx,mz)) return;
         else mx=t;
         t=mz;
         mz=z;
-        if(isWall(mx,mz)) return;
+        if(!isWall(mx,mz)) return;
         else mz=t;
     }
 }
@@ -324,6 +323,7 @@ void moveMeFlat(int direction)
         kickWall(px,pz);
         gluLookAt(mx, my, mz, mx + lx, my + ly, mz + lz, 0.0f, 1.0f, 0.0f);
     }
+    sndPlaySound("data/images/foot.wav",SND_ASYNC);
 }
 
 void mousemove(int x,int y)
