@@ -21,7 +21,7 @@ struct walllist
 };
 
 static float angleX = 0.0, angleY = 0.0, rati;//angle绕y轴的旋转角，ratio窗口高宽比
-static float mx = 50.0f, my = 2.5f, mz = 50.0f;//相机位置
+static float mx = -50.0f, my = 2.5f, mz = 25.0f;//相机位置
 static float lx = 0.0f, ly = 0.0f, lz = -1.0f,px=mx,pz=mz;//视线方向，初始设为沿着Z轴负方向
 static GLint wall_display_list;
 static POINT mousePos;
@@ -34,7 +34,9 @@ static walllist wall[1500];
 
 void light0()
 {
-    GLfloat spot[] = {mx, my, mz,1};
+    GLfloat lightx=mx-25*cos(3.14*angleX/180.0f);
+    GLfloat lightz=mz-25*sin(3.14*angleX/180.0f);
+    GLfloat spot[] = {lightx, my, lightz,1};
     GLfloat ambientLight[] = {0.5f, 0.5f, 0.5f, 1.0f};
     GLfloat specular[] = {1.0f, 1.0f, 1.0f, 1.0f};
     GLfloat spot_position[] = {mx+lx, my+ly, mz+lz};
@@ -43,6 +45,7 @@ void light0()
     glLightfv(GL_LIGHT0,GL_POSITION,spot);
     glLightfv(GL_LIGHT0,GL_SPOT_DIRECTION,spot_position);
     glLightf(GL_LIGHT0,GL_SPOT_CUTOFF,10.0f);
+    glLightf(GL_LIGHT0,GL_SPOT_EXPONENT,3.5);
     glEnable(GL_LIGHT0);
 }
 //定义观察方式
@@ -227,7 +230,7 @@ void recordWall()
 
 void initScenne()
 {
-    char str[]="data/images/sand0.bmp";
+    char str[]="data/images/road.bmp";
     LoadT81(str,	 g_cactus[0]);
     char str1[]="data/images/0RBack.bmp";
     LoadT81(str1, g_cactus[2]);
@@ -239,7 +242,7 @@ void initScenne()
 	LoadT81(str4,  g_cactus[5]);
 	char str5[]="data/images/0Right.bmp";
 	LoadT81(str5, g_cactus[6]);
-	char str6[]="data/images/sand2.bmp";
+	char str6[]="data/images/wall.bmp";
 	LoadT81(str6, g_cactus[1]);
     glEnable(GL_TEXTURE_2D);
     SetCursorPos(middleX, middleY);
@@ -247,7 +250,7 @@ void initScenne()
 	glEnable(GL_DEPTH_TEST);
 	wall_display_list = createDL();
 	glEnable(GL_LIGHTING);
-	GLfloat ambientLight[] = {10.9f, 10.9f, 10.9f, 1.0f};
+	GLfloat ambientLight[] = {0.9f, 0.9f, 0.9f, 1.0f};
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT,ambientLight);
 	recordWall();
 }
@@ -258,13 +261,19 @@ void renderScene(void)
 	light0();
     CreateSkyBox();
     //画地面
-	texture(g_cactus[0]);
-	glBegin(GL_QUADS);
-	glTexCoord2f(0.0f,0.0f);glVertex3f(-100.0f, 0.0f, -100.0f);
-	glTexCoord2f(1.0f,0.0f);glVertex3f(-100.0f, 0.0f, 100.0f);
-	glTexCoord2f(1.0f,1.0f);glVertex3f(100.0f, 0.0f, 100.0f);
-	glTexCoord2f(0.0f,1.0f);glVertex3f(100.0f, 0.0f, -100.0f);
-	glEnd();
+    texture(g_cactus[0]);
+    for(float i=-100;i<=100;i+=10)
+    {
+        for(float j=-100;j<=100;j+=10)
+        {
+            glBegin(GL_QUADS);
+            glTexCoord2f(0.0f,0.0f);glVertex3f(i, 0.0f, j);
+            glTexCoord2f(1.0f,0.0f);glVertex3f(i, 0.0f, j+10);
+            glTexCoord2f(1.0f,1.0f);glVertex3f(i+10, 0.0f, j+10);
+            glTexCoord2f(0.0f,1.0f);glVertex3f(i+10, 0.0f, j);
+            glEnd();
+        }
+    }
 	setWall();
     glutSwapBuffers();
 }
