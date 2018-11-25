@@ -22,8 +22,8 @@ struct walllist
 };
 
 static float angleX = 0.0, angleY = 0.0, rati;//angle绕y轴的旋转角，ratio窗口高宽比
-static float mx = -50.0f, my = 2.5f, mz = 25.0f;//相机位置
-static float lx = 0.0f, ly = 0.0f, lz = -1.0f,px=mx,pz=mz;//视线方向，初始设为沿着Z轴负方向
+static float mx = 7.0f, my = 2.5f, mz = 0.0f,lx = 0.0f, ly = 0.0f, lz = -1.0f,px=mx,pz=mz;//相机位置
+static GLfloat sun=10.9;
 static GLint wall_display_list;
 static POINT mousePos;
 static int middleX = GetSystemMetrics(SM_CXSCREEN)/2;
@@ -43,8 +43,8 @@ void light0()
     glLightfv(GL_LIGHT0,GL_SPECULAR,specular);
     glLightfv(GL_LIGHT0,GL_POSITION,spot);
     glLightfv(GL_LIGHT0,GL_SPOT_DIRECTION,spot_position);
-    glLightf(GL_LIGHT0,GL_SPOT_CUTOFF,10.0f);
-    glLightf(GL_LIGHT0,GL_SPOT_EXPONENT,3.5);
+    glLightf(GL_LIGHT0,GL_SPOT_CUTOFF,90.0f);
+    glLightf(GL_LIGHT0,GL_SPOT_EXPONENT,80);
     glEnable(GL_LIGHT0);
 }
 //定义观察方式
@@ -210,6 +210,42 @@ void setWall()
 			glPopMatrix();
 		}
     }
+    for(float i=-55;i<=35;i+=5)
+    {
+        glBegin(GL_QUADS);
+        glTexCoord2f(0.0f,0.0f);glVertex3f(-50, 0, i);
+        glTexCoord2f(1.0f,0.0f);glVertex3f(-50, 5, i);
+        glTexCoord2f(1.0f,1.0f);glVertex3f(-50, 5, i+5);
+        glTexCoord2f(0.0f,1.0f);glVertex3f(-50, 0, i+5);
+        glEnd();
+    }
+    for(float i=-55;i<=35;i+=5)
+    {
+        glBegin(GL_QUADS);
+        glTexCoord2f(0.0f,0.0f);glVertex3f(36, 0, i);
+        glTexCoord2f(1.0f,0.0f);glVertex3f(36, 5, i);
+        glTexCoord2f(1.0f,1.0f);glVertex3f(36, 5, i+5);
+        glTexCoord2f(0.0f,1.0f);glVertex3f(36, 0, i+5);
+        glEnd();
+    }
+    for(float i=-55;i<=35;i+=5)
+    {
+        glBegin(GL_QUADS);
+        glTexCoord2f(0.0f,0.0f);glVertex3f(i, 0,-50);
+        glTexCoord2f(1.0f,0.0f);glVertex3f(i, 5,-50);
+        glTexCoord2f(1.0f,1.0f);glVertex3f(i+5, 5,-50);
+        glTexCoord2f(0.0f,1.0f);glVertex3f(i+5, 0,-50);
+        glEnd();
+    }
+    for(float i=-55;i<=35;i+=5)
+    {
+        glBegin(GL_QUADS);
+        glTexCoord2f(0.0f,0.0f);glVertex3f(i, 0, 36);
+        glTexCoord2f(1.0f,0.0f);glVertex3f(i, 5,36);
+        glTexCoord2f(1.0f,1.0f);glVertex3f(i+5, 5,36);
+        glTexCoord2f(0.0f,1.0f);glVertex3f(i+5, 0,36);
+        glEnd();
+    }
 }
 
 void recordWall()
@@ -243,13 +279,15 @@ void initScenne()
 	LoadT81(str5, g_cactus[6]);
 	char str6[]="data/images/wall.bmp";
 	LoadT81(str6, g_cactus[1]);
+	char str7[]="data/images/ceiling.bmp";
+	LoadT81(str7, g_cactus[7]);
     glEnable(GL_TEXTURE_2D);
     SetCursorPos(middleX, middleY);
     ShowCursor(false);
 	glEnable(GL_DEPTH_TEST);
 	wall_display_list = createDL();
 	glEnable(GL_LIGHTING);
-	GLfloat ambientLight[] = {0.9f, 0.9f, 0.9f, 1.0f};
+	GLfloat ambientLight[] = {sun, sun, sun, 1.0f};
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT,ambientLight);
 	recordWall();
 }
@@ -261,15 +299,28 @@ void renderScene(void)
     CreateSkyBox();
     //画地面
     texture(g_cactus[0]);
-    for(float i=-100;i<=100;i+=10)
+    for(float i=-60;i<=60;i+=10)
     {
-        for(float j=-100;j<=100;j+=10)
+        for(float j=-60;j<=60;j+=10)
         {
             glBegin(GL_QUADS);
             glTexCoord2f(0.0f,0.0f);glVertex3f(i, 0.0f, j);
             glTexCoord2f(1.0f,0.0f);glVertex3f(i, 0.0f, j+10);
             glTexCoord2f(1.0f,1.0f);glVertex3f(i+10, 0.0f, j+10);
             glTexCoord2f(0.0f,1.0f);glVertex3f(i+10, 0.0f, j);
+            glEnd();
+        }
+    }
+    texture(g_cactus[7]);
+    for(float i=-60;i<=60;i+=10)
+    {
+        for(float j=-60;j<=60;j+=10)
+        {
+            glBegin(GL_QUADS);
+            glTexCoord2f(0.0f,0.0f);glVertex3f(i, 5.0f, j);
+            glTexCoord2f(1.0f,0.0f);glVertex3f(i, 5.0f, j+10);
+            glTexCoord2f(1.0f,1.0f);glVertex3f(i+10, 5.0f, j+10);
+            glTexCoord2f(0.0f,1.0f);glVertex3f(i+10, 5.0f, j);
             glEnd();
         }
     }
@@ -283,6 +334,7 @@ bool isWall(float x,float z)
     {
         if(wall[i].point1x-x<1.3&&wall[i].point2x-x>-1.3&&z-wall[i].point1z>-1.3&&wall[i].point2z-z>-1.3) return true;
     }
+    if(x<-48.7||x>34.7||z<-48.7||z>34.7) return true;
     return false;
 }
 
@@ -294,11 +346,11 @@ void kickWall(float x,float z)
         t=mx;
         mx=x;
         if(!isWall(mx,mz)) return;
-        else mx=t;
+        else if(t>-48.7&&t<34.7) mx=t;
         t=mz;
         mz=z;
         if(!isWall(mx,mz)) return;
-        else mz=t;
+        else if(t>-48.7&&t<34.7) mz=t;
     }
 }
 
@@ -323,7 +375,7 @@ void moveMeFlat(int direction)
         kickWall(px,pz);
         gluLookAt(mx, my, mz, mx + lx, my + ly, mz + lz, 0.0f, 1.0f, 0.0f);
     }
-    sndPlaySound("data/images/foot.wav",SND_ASYNC);
+    //sndPlaySound("data/images/foot.wav",SND_ASYNC);
 }
 
 void mousemove(int x,int y)
