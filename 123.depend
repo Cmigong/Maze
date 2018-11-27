@@ -246,3 +246,16 @@
 	<ctime>
 	<cstdlib>
 
+1542729360 source:d:\maze\main.cpp
+	<algorithm>
+	<iostream>
+	<windows.h>
+	<GL/glu.h>
+	<GL/gl.h>
+	<GL/glut.h>
+	<GL/GLAUX.H>
+	<math.h>
+	<stdio.h>
+	<ctime>
+	<cstdlib>
+

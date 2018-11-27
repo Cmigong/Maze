@@ -3,13 +3,14 @@
 #include <windows.h>
 #include <GL/glu.h>
 #include <GL/gl.h>
+#define GLUT_DISABLE_ATEXIT_HACK
 #include <GL/glut.h>
 #include <GL/GLAUX.H>
 #include <math.h>
 #include <stdio.h>
 #include <ctime>
 #include <cstdlib>
-
+#define glutCreateMenu_ATEXIT_HACK
 using namespace std;
 
 struct walllist
@@ -341,19 +342,19 @@ void mousemove(int x,int y)
 
 void keyboredmove(unsigned char key,int x,int y)
 {
-    if(key=='w')
+    if(key=='W')
     {
         moveMeFlat(1);
     }
-    else if(key=='d')
+    else if(key=='D')
     {
         moveMeFlat(-2);
     }
-    else if(key=='a')
+    else if(key=='A')
     {
         moveMeFlat(2);
     }
-    else if(key=='s')
+    else if(key=='S')
     {
         moveMeFlat(-1);
     }
