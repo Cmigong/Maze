@@ -21,9 +21,9 @@ struct walllist
     float point2z;
 };
 
-static float angleX = 0.0, angleY = 0.0, rati;//angle绕y轴的旋转角，ratio窗口高宽比
-static float mx = 7.0f, my = 2.5f, mz = 0.0f,lx = 0.0f, ly = 0.0f, lz = -1.0f,px=mx,pz=mz;//相机位置
-static GLfloat sun=10.9;
+static float angleX = 0.0, angleY = 0.0, rati;
+static float mx = 7.0f, my = 2.5f, mz = 0.0f,lx = 0.0f, ly = 0.0f, lz = -1.0f,px=mx,pz=mz;
+static GLfloat sun=0.9;
 static GLint wall_display_list;
 static POINT mousePos;
 static int middleX = GetSystemMetrics(SM_CXSCREEN)/2;
@@ -47,17 +47,14 @@ void light0()
     glLightf(GL_LIGHT0,GL_SPOT_EXPONENT,80);
     glEnable(GL_LIGHT0);
 }
-//定义观察方式
+
 void changeSize(int w, int h)
 {
-	//除以0的情况
-	if (h == 0)  h = 1;
-	rati= 1.0f*w / h;
+	if(h==0)  h=1;
+	rati=1.0f*w/h;
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	//设置视口为整个窗口大小
 	glViewport(0, 0, w, h);
-	//设置可视空间
 	gluPerspective(45, rati, 1, 3500);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -103,7 +100,7 @@ void drawWall()
 	glTexCoord2f(1.0, 0.0);
 	glVertex3f(5, 5, -5);
 	glEnd();
-	//5----------------------------
+	//3----------------------------
 	glBegin(GL_QUADS);
 	glNormal3f(-1.0F, 0.0F, 0.0F);
 	glTexCoord2f(0.0, 0.0);
@@ -115,14 +112,13 @@ void drawWall()
 	glTexCoord2f(1.0, 0.0);
 	glVertex3f(-5, 5, -5);
 	glEnd();
-	//6----------------------------*/
+	//4----------------------------
 	glPopMatrix();
 }
 
 GLuint createDL()
 {
-	GLuint WallDL= glGenLists(1);
-	//开始显示列表
+	GLuint WallDL=glGenLists(1);
 	glNewList(WallDL, GL_COMPILE);
 	drawWall();
 	glEndList();
@@ -131,11 +127,11 @@ GLuint createDL()
 
 bool LoadT81(char *filename, GLuint &texture)
 {
-    AUX_RGBImageRec *pImage = NULL;
-	pImage = auxDIBImageLoad(filename);
-	if(pImage == NULL)		return false;
+    AUX_RGBImageRec *pImage=NULL;
+	pImage=auxDIBImageLoad(filename);
+	if(pImage == NULL) return false;
 	glGenTextures(1, &texture);
-	glBindTexture    (GL_TEXTURE_2D,texture);
+	glBindTexture(GL_TEXTURE_2D,texture);
 	gluBuild2DMipmaps(GL_TEXTURE_2D,4, pImage->sizeX,pImage->sizeY,GL_RGB, GL_UNSIGNED_BYTE,pImage->data);
 	return true;
 }
@@ -159,7 +155,6 @@ void CreateSkyBox()
 	float x=MAP  -width /2;
 	float y=MAP/a-height/2;
 	float z=-MAP -length/2;
-///////////////////////////////////////////////////////////////////////////////
 	texture(g_cactus[2]);
 	glBegin(GL_QUADS);
 		glTexCoord2f(1.0f,0.0f); glVertex3f(x+width,y,		 z);
@@ -266,30 +261,31 @@ void recordWall()
 void initScenne()
 {
     char str[]="data/images/road.bmp";
-    LoadT81(str,	 g_cactus[0]);
+    LoadT81(str,g_cactus[0]);
     char str1[]="data/images/0RBack.bmp";
-    LoadT81(str1, g_cactus[2]);
+    LoadT81(str1,g_cactus[2]);
     char str2[]="data/images/0Front.bmp";
-	LoadT81(str2, g_cactus[3]);
+	LoadT81(str2,g_cactus[3]);
 	char str3[]="data/images/0Top.bmp";
-	LoadT81(str3,	 g_cactus[4]);
+	LoadT81(str3,g_cactus[4]);
 	char str4[]="data/images/0Left.bmp";
-	LoadT81(str4,  g_cactus[5]);
+	LoadT81(str4,g_cactus[5]);
 	char str5[]="data/images/0Right.bmp";
-	LoadT81(str5, g_cactus[6]);
+	LoadT81(str5,g_cactus[6]);
 	char str6[]="data/images/wall.bmp";
-	LoadT81(str6, g_cactus[1]);
+	LoadT81(str6,g_cactus[1]);
 	char str7[]="data/images/ceiling.bmp";
-	LoadT81(str7, g_cactus[7]);
+	LoadT81(str7,g_cactus[7]);
     glEnable(GL_TEXTURE_2D);
     SetCursorPos(middleX, middleY);
     ShowCursor(false);
 	glEnable(GL_DEPTH_TEST);
-	wall_display_list = createDL();
+	wall_display_list=createDL();
 	glEnable(GL_LIGHTING);
-	GLfloat ambientLight[] = {sun, sun, sun, 1.0f};
+	GLfloat ambientLight[]={sun, sun, sun, 1.0f};
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT,ambientLight);
 	recordWall();
+	sndPlaySound("data/images/background.wav",SND_ASYNC||SND_LOOP);
 }
 
 void renderScene(void)
@@ -297,7 +293,6 @@ void renderScene(void)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	light0();
     CreateSkyBox();
-    //画地面
     texture(g_cactus[0]);
     for(float i=-60;i<=60;i+=10)
     {
@@ -354,7 +349,6 @@ void kickWall(float x,float z)
     }
 }
 
-//移动相机
 void moveMeFlat(int direction)
 {
     px=mx;
@@ -375,7 +369,7 @@ void moveMeFlat(int direction)
         kickWall(px,pz);
         gluLookAt(mx, my, mz, mx + lx, my + ly, mz + lz, 0.0f, 1.0f, 0.0f);
     }
-    //sndPlaySound("data/images/foot.wav",SND_ASYNC);
+    //sndPlaySound("data/images/selffoot.wav",SND_ASYNC);
 }
 
 void mousemove(int x,int y)
