@@ -3,7 +3,11 @@
 
 #TARGET = Maze
 
-HEADERS =
+HEADERS = \
+   $$PWD/lib/freeglut/include/GL/freeglut.h \
+   $$PWD/lib/freeglut/include/GL/freeglut_ext.h \
+   $$PWD/lib/freeglut/include/GL/freeglut_std.h \
+   $$PWD/lib/freeglut/include/GL/glut.h
 
 SOURCES = \
    $$PWD/bin/Debug/data/3ds/car_dealers1.bmp \
@@ -84,7 +88,6 @@ SOURCES = \
    $$PWD/bin/Debug/data/模型/士兵0/weapon.PCX \
    $$PWD/bin/Debug/data/aa.txt \
    $$PWD/bin/Debug/data/bb.txt \
-   $$PWD/bin/Debug/week1.zip \
    $$PWD/data/avi/00.avi \
    $$PWD/data/avi/01.avi \
    $$PWD/data/avi/02.avi \
@@ -123,15 +126,24 @@ SOURCES = \
    $$PWD/data/images/SAND4.BMP \
    $$PWD/data/images/selffoot.wav \
    $$PWD/data/images/wall.bmp \
+   $$PWD/lib/freeglut/bin/x64/freeglut.dll \
+   $$PWD/lib/freeglut/bin/freeglut.dll \
+   $$PWD/lib/freeglut/lib/x64/libfreeglut.a \
+   $$PWD/lib/freeglut/lib/x64/libfreeglut_static.a \
+   $$PWD/lib/freeglut/lib/libfreeglut.a \
+   $$PWD/lib/freeglut/lib/libfreeglut_static.a \
+   $$PWD/lib/freeglut/Copying.txt \
+   $$PWD/lib/freeglut/Readme.txt \
    $$PWD/.gitignore \
    $$PWD/123.cbp \
    $$PWD/123.depend \
    $$PWD/123.layout \
    $$PWD/main.cpp \
-   $$PWD/opengl.zip \
+   $$PWD/Maze.pro \
    $$PWD/README.md
 
-INCLUDEPATH =
+INCLUDEPATH = \
+    $$PWD/lib/freeglut/include/GL
 
 #DEFINES = 
 

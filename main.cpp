@@ -3,8 +3,8 @@
 #include <windows.h>
 #include <GL/glu.h>
 #include <GL/gl.h>
-#include <GL/glut.h>
-#include <GL/GLAUX.H>
+#include <lib/freeglut/include/GL/glut.h>
+#include <GL/glaux.h>
 #include <math.h>
 #include <stdio.h>
 #include <ctime>
@@ -128,7 +128,7 @@ GLuint createDL()
 bool LoadT81(char *filename, GLuint &texture)
 {
     AUX_RGBImageRec *pImage=NULL;
-	pImage=auxDIBImageLoad(filename);
+    pImage=auxDIBImageLoadA(filename);
 	if(pImage == NULL) return false;
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D,texture);
@@ -285,7 +285,7 @@ void initScenne()
 	GLfloat ambientLight[]={sun, sun, sun, 1.0f};
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT,ambientLight);
 	recordWall();
-	sndPlaySound("data/images/background.wav",SND_ASYNC||SND_LOOP);
+    sndPlaySoundA("data/images/background.wav",SND_ASYNC||SND_LOOP);
 }
 
 void renderScene(void)
